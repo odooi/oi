@@ -1,0 +1,5 @@
+/var/log/oi/*.log {
+    copytruncate
+    missingok
+    notifempty
+}

@@ -1,0 +1,2 @@
+debian/oi.conf /etc/oi
+README.md /usr/share/doc/oi

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+set -e
+
+OI_CONFIGURATION_FILE=/etc/oi/oi.conf
+OI_GROUP="oi"
+OI_DATA_DIR=/var/lib/oi
+OI_LOG_DIR=/var/log/oi
+OI_USER="oi"
+GSFONTS_DIR=/usr/share/fonts/type1/gsfonts
+
+case "${1}" in
+    configure)
+        if ! getent passwd | grep -q "^oi:"; then
+            adduser --system --home $OI_DATA_DIR --quiet --group $OI_USER
+            # Data dir
+            chown $OI_USER:$OI_GROUP $OI_DATA_DIR
+        fi
+        # Register "$OI_USER" as a postgres user with "Create DB" role attribute
+        su - postgres -c "createuser -d -R -S $OI_USER" 2> /dev/null || true
+        # Configuration file
+        chown $OI_USER:$OI_GROUP $OI_CONFIGURATION_FILE
+        chmod 0640 $OI_CONFIGURATION_FILE
+        # Log
+        mkdir -p $OI_LOG_DIR
+        chown $OI_USER:$OI_GROUP $OI_LOG_DIR
+        chmod 0750 $OI_LOG_DIR
+        	# work around https://bugs.debian.org/1059326
+
+        if ! [ -e ${GSFONTS_DIR}/n021003l.pfb ] ; then
+            if ! [ -d ${GSFONTS_DIR} ] ; then
+                mkdir ${GSFONTS_DIR}
+                touch ${GSFONTS_DIR}/.created-by-oi-package
+            fi
+            ln -s /usr/share/fonts/X11/Type1/C059-Roman.pfb ${GSFONTS_DIR}/n021003l.pfb
+        fi
+        ;;
+    *)
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0
