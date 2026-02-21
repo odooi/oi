@@ -26,6 +26,7 @@ oi/addons/base/maintenance
 # generated for windows installer?
 install/win32/*.bat
 install/win32/meta.py
+*Zone.Identifier
 
 # needed only when building for win32
 setup/win32/static/less/
